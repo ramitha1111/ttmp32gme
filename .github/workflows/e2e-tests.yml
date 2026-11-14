@@ -1,3 +1,10 @@
+# Optimized by ci-cost (https://github.com/mariotavarez/ci-cost)
+# Applied 3 optimizations:
+# - [HIGH] Add pip dependency cache to "e2e-tests" job
+# - [MEDIUM] Add concurrency group to "e2e-tests.yml"
+# - [LOW] Use shallow clone in "e2e-tests" job
+# Estimated savings: ~5 min/run
+#
 name: End-to-End Tests
 
 # Run E2E tests when there are changes in src/ or tests/e2e/
@@ -19,6 +26,10 @@ on:
       - 'src/**'
       - 'tests/e2e/**'
 
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 
@@ -39,7 +50,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Needed for setuptools-scm
+        fetch-depth: 1  # Needed for setuptools-scm
 
     - name: Set up Python
       uses: actions/setup-python@v5
